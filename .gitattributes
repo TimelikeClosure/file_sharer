@@ -1,0 +1,23 @@
+# declare text files to normalize line endings
+*.txt text
+*.md text
+*.html text
+*.svg text
+*.css text
+*.js text
+*.json text
+*.php text
+*.htaccess text
+*.git* text
+
+# declare binary files to prevent changing line endings
+*.eot binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.jpg binary
+*.png binary
+*.gif binary
+*.psd binary
+*.mp4 binary
+*.ogv binary

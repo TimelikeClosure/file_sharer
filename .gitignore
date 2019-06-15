@@ -1,2 +1,9 @@
+.vscode
+
+config/
+!config/.git*
+!config/*.template
+!config/index.js
+
 node_modules
 package-lock.json
