@@ -4,7 +4,8 @@
   "description": "Device to device file transfer app.",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "start": "node app",
+    "test": "node tests"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,8 @@
   },
   "homepage": "https://github.com/TimelikeClosure/file_sharer_web#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
