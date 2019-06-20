@@ -9,10 +9,16 @@ const express = require('express');
 
 const app = express();
 
-app.use(express.static(resolve('.', 'public')));
+const clientDir = resolve(__dirname, 'public');
+
+app.use(express.static(resolve(clientDir)));
+
+app.get('/', (req, res) => {
+    res.sendFile(resolve(clientDir, 'index.html'));
+});
 
 app.get('*', (req, res) => {
-    res.sendFile(resolve(__dirname, 'public', 'index.html'));
+    res.sendFile(resolve(clientDir, '404.html'));
 });
 
 const PORT = config.env.PORT || 4321;
