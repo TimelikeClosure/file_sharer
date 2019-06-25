@@ -3,14 +3,15 @@
     <head>
         <meta charset="utf8">
         <script src="/assets/js/socket-io.js"></script>
-        <script>var socket = io();</script>
+        <script src="/assets/js/app.js"></script>
     </head>
     <body>
         <h1>Welcome to File Mover</h1>
         <p>What do you want to do?</p>
-        <form action="">
-            <button>Send Files</button>
-            <button>Receive Files</button>
+        <form id="transfer_mode_select" action="">
+            <label><input type="radio" id="send_files" name="transfer_mode" value="send" />Send Files</label>
+            <label><input type="radio" id="receive_files" name="transfer_mode" value="receive" />Receive Files</label>
+            <button>Set Mode</button>
         </form>
     </body>
 </html>

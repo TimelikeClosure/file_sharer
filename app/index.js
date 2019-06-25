@@ -11,6 +11,7 @@ const SocketIO = require('socket.io');
 const app = express();
 const http = require('http').createServer(app);
 const io = SocketIO(http);
+const socketManager = require(resolve(__dirname, 'socket-manager'))(io);
 
 const clientDir = resolve(__dirname, 'public');
 
@@ -27,10 +28,6 @@ app.get('/', (req, res) => {
 
 app.get('*', (req, res) => {
     res.sendFile(resolve(clientDir, '404.html'));
-});
-
-io.on('connection', (socket) => {
-    console.log('Hiyo to the IO');
 });
 
 const PORT = config.env.PORT || 4321;
