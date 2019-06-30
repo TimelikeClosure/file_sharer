@@ -2,18 +2,26 @@
 
 const sockets = new Map();
 
+const unpairedSocketDisconnect = socket => () => {
+    console.log(new Date() + ': Biyo to the IO');
+    sockets.delete(socket);
+};
+
+const unpairedSocketSetMode = socket => mode => {
+    console.log(`New mode set: ${mode}`);
+};
+
 module.exports = exports = (io) => {
     io.on('connection', (socket) => {
-        sockets.set(socket, { role: null });
-        console.log(new Date() + ': Hiyo to the IO');
-        socket.on('disconnect', () => {
-            console.log(new Date() + ': Biyo to the IO');
-            sockets.delete(socket);
-        });
+        const unpairedDisconnect = unpairedSocketDisconnect(socket);
+        const unpairedSetMode = unpairedSocketSetMode(socket);
 
-        socket.on('set_mode', mode => {
-            console.log(`New mode set: ${mode}`);
-        });
+        sockets.set(socket, { role: null });
+
+        socket.on('disconnect', unpairedDisconnect);
+        socket.on('set_mode', unpairedSetMode);
+
+        console.log(new Date() + ': Hiyo to the IO');
     });
 };
 
