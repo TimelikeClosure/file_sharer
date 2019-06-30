@@ -16,3 +16,25 @@ module.exports = exports = (io) => {
         });
     });
 };
+
+//  EVENTS (connect)
+
+//  ^ connect
+
+//  EVENTS (pairing)
+
+//  ^ set_mode send
+//  v mode_set mode: send, sender_id: <id>
+//  ^ request_pair receiver_id: <id>
+
+//  OR
+
+//  ^ set_mode receive
+//  v mode_set mode: receive, receiver_id: <id>
+//  ^ request_pair sender_id: <id>
+
+//  THEN
+
+//  v pair_matched
+
+//  EVENTS (transferring)
