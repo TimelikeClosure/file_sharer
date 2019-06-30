@@ -2,24 +2,41 @@
 
 const sockets = new Map();
 
-const unpairedSocketDisconnect = socket => () => {
-    console.log(new Date() + ': Biyo to the IO');
+const socketDisconnect = socket => () => {
+    const pairedSocket = sockets.get(socket).pairedSocket;
+    if (pairedSocket !== null){
+        const pairedSocketStats = sockets.get(pairedSocket);
+        if (pairedSocketStats.pairedSocket === socket){
+            pairedSocketStats.mode = null;
+            pairedSocketStats.pairedSocket = null;
+            pairedSocket.emit('mode_set', { message: 'paired socket disconnected' });
+        }
+    }
+
     sockets.delete(socket);
+
+    console.log(new Date() + ': Biyo to the IO');
 };
 
-const unpairedSocketSetMode = socket => mode => {
+const socketSetMode = socket => mode => {
+    if (mode !== null && !['send', 'receive'].includes(mode)){
+        return;
+    }
+    sockets.get(socket).mode = mode;
+    socket.emit('mode_set', mode);
+
     console.log(`New mode set: ${mode}`);
 };
 
 module.exports = exports = (io) => {
     io.on('connection', (socket) => {
-        const unpairedDisconnect = unpairedSocketDisconnect(socket);
-        const unpairedSetMode = unpairedSocketSetMode(socket);
+        const disconnect = socketDisconnect(socket);
+        const setMode = socketSetMode(socket);
 
-        sockets.set(socket, { role: null });
+        sockets.set(socket, { mode: null, pairedSocket: null });
 
-        socket.on('disconnect', unpairedDisconnect);
-        socket.on('set_mode', unpairedSetMode);
+        socket.on('disconnect', disconnect);
+        socket.on('set_mode', setMode);
 
         console.log(new Date() + ': Hiyo to the IO');
     });
