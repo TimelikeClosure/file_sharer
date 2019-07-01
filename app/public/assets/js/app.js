@@ -4,6 +4,7 @@ const socket = io();
 
 document.addEventListener('DOMContentLoaded', event => {
     const elements = {
+        mode_current: document.getElementById('mode_selected'),
         mode_select: document.getElementById('transfer_mode_select'),
         connect_code: document.getElementById('connect_code'),
         device_code: document.getElementById('device_code'),
@@ -16,10 +17,14 @@ document.addEventListener('DOMContentLoaded', event => {
     });
     socket.on('mode_set', message => {
         if (message.mode === null){
+            elements.mode_current.innerText = "What do you want to do?";
+            elements.device_code.innerText = "";
+
             elements.mode_select.classList.remove('hidden');
             elements.connect_code.classList.add('hidden');
             elements.device_pair.classList.add('hidden');
         } else if (['send', 'receive'].includes(message.mode)){
+            elements.mode_current.innerText = `${message.mode === 'send' ? 'Send' : 'Receiv'}ing Files`;
             elements.device_code.innerText = message.id;
 
             elements.mode_select.classList.add('hidden');
