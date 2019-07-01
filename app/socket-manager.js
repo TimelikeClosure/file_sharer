@@ -25,6 +25,14 @@ const socketDisconnect = socket => () => {
         }
     }
 
+    Object.keys(lobbySockets)
+    .forEach(mode => {
+        for (const id of lobbySockets[mode].keys()){
+            if (lobbySockets[mode].get(id) === socket){
+                lobbySockets[mode].delete(id);
+            }
+        }
+    });
     sockets.delete(socket);
 
     console.log(new Date() + ': Biyo to the IO');
@@ -50,6 +58,11 @@ const socketSetMode = socket => mode => {
         lobbySockets[mode].set(response.id, socket);
     }
     sockets.get(socket).mode = mode;
+    Object.keys(lobbySockets)
+    .filter(key => key !== mode)
+    .forEach(key => {
+        lobbySockets[key].delete(response.id);
+    });
 
     socket.emit('mode_set', response);
 
