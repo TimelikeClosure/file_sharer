@@ -69,10 +69,39 @@ const socketSetMode = socket => mode => {
     console.log(`New mode set: ${mode}`);
 };
 
+const socketRequestPair = socket => device_code => {
+    const socketStats = sockets.get(socket);
+    // Exit if socket's mode isn't pairable
+    const modes = ['send', 'receive'];
+    if (!modes.includes(socketStats.mode)){ return }
+    // Exit if socket is already paired
+    if (
+        socketStats.pairedSocket
+        && sockets.get(socketStats.pairedSocket).pairedSocket === socket
+    ){ return }
+    // Exit if device_code doesn't exist
+    const { mode } = socketStats;
+    const pairedMode = modes[1 - modes.indexOf(mode)];
+    if (!lobbySockets[pairedMode].has(device_code)){ return }
+    // Set device as pair
+    socketStats.pairedSocket = lobbySockets[pairedMode].get(device_code);
+    // If pairing is mutual, create solidify pairing.
+    if (sockets.get(socketStats.pairedSocket).pairedSocket === socket){
+        createSocketPair(socket, socketStats.pairedSocket);
+    }
+};
+
+const createSocketPair = (sendSocket, receiveSocket) => {
+    if (sockets.get(sendSocket).mode === 'receive'){
+        return createSocketPair(receiveSocket, sendSocket);
+    }
+};
+
 module.exports = exports = (io) => {
     io.on('connection', (socket) => {
         const disconnect = socketDisconnect(socket);
         const setMode = socketSetMode(socket);
+        const requestPair = socketRequestPair(socket);
 
         sockets.set(socket, {
             mode: null,
@@ -81,6 +110,7 @@ module.exports = exports = (io) => {
 
         socket.on('disconnect', disconnect);
         socket.on('set_mode', setMode);
+        socket.on('request_pair', requestPair);
 
         console.log(new Date() + ': Hiyo to the IO');
     });
