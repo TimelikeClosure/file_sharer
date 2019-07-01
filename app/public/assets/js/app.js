@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', event => {
         event.preventDefault();
         socket.emit('set_mode', event.target.elements.transfer_mode.value);
     });
+
     socket.on('mode_set', message => {
         if (message.mode === null){
             elements.mode_current.innerText = "What do you want to do?";
@@ -31,5 +32,21 @@ document.addEventListener('DOMContentLoaded', event => {
             elements.connect_code.classList.remove('hidden');
             elements.device_pair.classList.remove('hidden');
         }
+    });
+
+    document.getElementById('other_device_code').addEventListener('change', (event) => {
+        event.target.value = event.target.value.toUpperCase();
+        if (event.target.value.length === 5){
+            document.getElementById('pair_request_submit').removeAttribute('disabled');
+        } else {
+            document.getElementById('pair_request_submit').setAttribute('disabled', 'disabled');
+        }
+    });
+
+    elements.device_pair.addEventListener('submit', (event) => {
+        event.preventDefault();
+        document.getElementById('pair_request_submit').setAttribute('disabled', 'disabled');
+        document.getElementById('other_device_code').setAttribute('disabled', 'disabled');
+        socket.emit('request_pair', event.target.elements.other_device_code.value);
     });
 });
