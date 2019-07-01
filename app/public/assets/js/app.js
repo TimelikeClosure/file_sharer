@@ -3,8 +3,28 @@
 const socket = io();
 
 document.addEventListener('DOMContentLoaded', event => {
-    document.getElementById('transfer_mode_select').addEventListener('submit', (event) => {
+    const elements = {
+        mode_select: document.getElementById('transfer_mode_select'),
+        connect_code: document.getElementById('connect_code'),
+        device_code: document.getElementById('device_code'),
+        device_pair: document.getElementById('device_pair_request'),
+    };
+
+    elements.mode_select.addEventListener('submit', (event) => {
         event.preventDefault();
         socket.emit('set_mode', event.target.elements.transfer_mode.value);
+    });
+    socket.on('mode_set', message => {
+        if (message.mode === null){
+            elements.mode_select.classList.remove('hidden');
+            elements.connect_code.classList.add('hidden');
+            elements.device_pair.classList.add('hidden');
+        } else if (['send', 'receive'].includes(message.mode)){
+            elements.device_code.innerText = message.id;
+
+            elements.mode_select.classList.add('hidden');
+            elements.connect_code.classList.remove('hidden');
+            elements.device_pair.classList.remove('hidden');
+        }
     });
 });

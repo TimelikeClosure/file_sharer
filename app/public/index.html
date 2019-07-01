@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="utf8">
+        <link rel="stylesheet" href="/assets/css/style.css">
         <script src="/assets/js/socket-io.js"></script>
         <script src="/assets/js/app.js"></script>
     </head>
@@ -12,6 +13,11 @@
             <label><input type="radio" id="send_files" name="transfer_mode" value="send" />Send Files</label>
             <label><input type="radio" id="receive_files" name="transfer_mode" value="receive" />Receive Files</label>
             <button>Set Mode</button>
+        </form>
+        <div id="connect_code" class="hidden">Enter this code on your other device: <span id="device_code"></span></div>
+        <form action="" id="device_pair_request" class="hidden">
+            <label>Enter your other device's code: <input type="text" name="other_device_code" id="other_device_code"></label>
+            <button>Request Pairing</button>
         </form>
     </body>
 </html>
