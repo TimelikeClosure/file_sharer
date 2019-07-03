@@ -27,6 +27,19 @@ function randomId(){
     return id;
 }
 
+const isSocketPaired = socket => (
+    sockets.has(socket)
+    && pipe(
+        sockets.get(socket),
+        socketStats => (
+            ['send', 'receive'].includes(socketStats.mode)
+            && socketStats.pairedSocket !== socket
+            && sockets.has(socketStats.pairedSocket)
+            && sockets.get(socketStats.pairedSocket).pairedSocket === socket
+        )
+    )
+);
+
 const socketDisconnect = socket => () => {
     const pairedSocket = sockets.get(socket).pairedSocket;
     if (pairedSocket !== null && sockets.has(pairedSocket)){
@@ -120,8 +133,8 @@ const createSocketPair = (sendSocket, receiveSocket) => {
     lobbySockets.send.delete(sendSocket);
     lobbySockets.receive.delete(receiveSocket);
 
-    receiveSocket.emit('pair_matched');
-    sendSocket.emit('pair_matched');
+    receiveSocket.emit('pair_matched', { mode: socketStats.receive.mode });
+    sendSocket.emit('pair_matched', { mode: socketStats.send.mode });
 };
 
 module.exports = exports = (io) => {

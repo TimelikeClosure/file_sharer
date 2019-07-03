@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', event => {
             elements.connect_code.classList.add('hidden');
             elements.device_pair.classList.add('hidden');
         } else if (['send', 'receive'].includes(message.mode)){
-            elements.mode_current.innerText = `${message.mode === 'send' ? 'Send' : 'Receiv'}ing Files`;
+            elements.mode_current.innerText = `Pair with another device as a file ${message.mode === 'send' ? 'send' : 'receiv'}er`;
             elements.device_code.innerText = message.id;
 
             elements.mode_select.classList.add('hidden');
@@ -48,5 +48,16 @@ document.addEventListener('DOMContentLoaded', event => {
         document.getElementById('pair_request_submit').setAttribute('disabled', 'disabled');
         document.getElementById('other_device_code').setAttribute('disabled', 'disabled');
         socket.emit('request_pair', event.target.elements.other_device_code.value);
+    });
+
+    socket.on('pair_matched', message => {
+        elements.mode_select.classList.add('hidden');
+        elements.connect_code.classList.add('hidden');
+        elements.device_pair.classList.add('hidden');
+        if (message.mode === 'send'){
+            elements.mode_current.innerText = "Use the form to upload files";
+        } else if (message.mode === 'receive'){
+            elements.mode_current.innerText = "Waiting for sent files...";
+        }
     });
 });
