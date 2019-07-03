@@ -7,6 +7,17 @@ const lobbySockets = Object.freeze({
     receive: new Map(),
 });
 
+function pipeline(...pipes){
+    return pipelineInput => pipes.reduce(
+        (pipeInput, pipe) => pipe(pipeInput),
+        pipelineInput
+    );
+}
+
+function pipe(input, ...pipes){
+    return pipeline(...pipes)(input);
+}
+
 function randomId(){
     let id = "";
     for (let i = 0; i < 5; i++){
@@ -18,7 +29,7 @@ function randomId(){
 
 const socketDisconnect = socket => () => {
     const pairedSocket = sockets.get(socket).pairedSocket;
-    if (pairedSocket !== null){
+    if (pairedSocket !== null && sockets.has(pairedSocket)){
         const pairedSocketStats = sockets.get(pairedSocket);
         if (pairedSocketStats.pairedSocket === socket){
             socketSetMode(pairedSocket)(null);
@@ -92,9 +103,25 @@ const socketRequestPair = socket => device_code => {
 };
 
 const createSocketPair = (sendSocket, receiveSocket) => {
-    if (sockets.get(sendSocket).mode === 'receive'){
-        return createSocketPair(receiveSocket, sendSocket);
-    }
+    const socketStats = {
+        send: sockets.get(sendSocket),
+        receive: sockets.get(receiveSocket),
+    };
+
+    if (
+        socketStats.send.mode === 'receive'
+        && socketStats.receive.mode === 'send'
+    ){ return createSocketPair(receiveSocket, sendSocket) }
+    if (
+        socketStats.send.mode !== 'send'
+        || socketStats.receive.mode !== 'receive'
+    ){ return void undefined }
+
+    lobbySockets.send.delete(sendSocket);
+    lobbySockets.receive.delete(receiveSocket);
+
+    receiveSocket.emit('pair_matched');
+    sendSocket.emit('pair_matched');
 };
 
 module.exports = exports = (io) => {
