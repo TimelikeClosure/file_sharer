@@ -1,4 +1,4 @@
-.hidden {
+.hideable:not(.shown){
     display: none;
 }
 

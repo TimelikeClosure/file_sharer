@@ -2,6 +2,41 @@
 
 const socket = io();
 
+function renderView(view, locals = {}){
+    const views = {
+        home: {
+            message: "What do you want to do?",
+            shownIds: ['transfer_mode_select'],
+        },
+        send_pair: {
+            message: "Pair with another device as a file sender",
+            shownIds: ['connect_code', 'device_pair_request'],
+        },
+        receive_pair: {
+            message: "Pair with another device as a file receiver",
+            shownIds: ['connect_code', 'device_pair_request'],
+        },
+        send_ready: {
+            message: "Use the form to upload files",
+            shownIds: [],
+        },
+        receive_ready: {
+            message: "Waiting for sent files...",
+            shownIds: [],
+        },
+    };
+    document.getElementById('mode_selected').innerText = views[view].message;
+    const device_code = locals.device_code || "";
+    document.getElementById('device_code').innerText = device_code;
+    const oldShown = document.getElementsByClassName('shown');
+    for (var oldShownIndex = oldShown.length - 1; oldShownIndex >= 0; oldShownIndex--){
+        oldShown[oldShownIndex].classList.remove('shown');
+    }
+    views[view].shownIds.forEach(function(id){
+        document.getElementById(id).classList.add('shown');
+    });
+}
+
 document.addEventListener('DOMContentLoaded', event => {
     const elements = {
         mode_current: document.getElementById('mode_selected'),
@@ -18,19 +53,9 @@ document.addEventListener('DOMContentLoaded', event => {
 
     socket.on('mode_set', message => {
         if (message.mode === null){
-            elements.mode_current.innerText = "What do you want to do?";
-            elements.device_code.innerText = "";
-
-            elements.mode_select.classList.remove('hidden');
-            elements.connect_code.classList.add('hidden');
-            elements.device_pair.classList.add('hidden');
+            renderView('home');
         } else if (['send', 'receive'].includes(message.mode)){
-            elements.mode_current.innerText = `Pair with another device as a file ${message.mode === 'send' ? 'send' : 'receiv'}er`;
-            elements.device_code.innerText = message.id;
-
-            elements.mode_select.classList.add('hidden');
-            elements.connect_code.classList.remove('hidden');
-            elements.device_pair.classList.remove('hidden');
+            renderView(message.mode + "_pair", { device_code: message.id });
         }
     });
 
@@ -51,13 +76,6 @@ document.addEventListener('DOMContentLoaded', event => {
     });
 
     socket.on('pair_matched', message => {
-        elements.mode_select.classList.add('hidden');
-        elements.connect_code.classList.add('hidden');
-        elements.device_pair.classList.add('hidden');
-        if (message.mode === 'send'){
-            elements.mode_current.innerText = "Use the form to upload files";
-        } else if (message.mode === 'receive'){
-            elements.mode_current.innerText = "Waiting for sent files...";
-        }
+        renderView(message.mode + "_ready");
     });
 });

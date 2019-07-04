@@ -9,13 +9,13 @@
     <body>
         <h1>Welcome to File Mover</h1>
         <h3 id="mode_selected">What do you want to do?</h3>
-        <form id="transfer_mode_select" action="">
+        <form id="transfer_mode_select" action="" class="hideable shown">
             <label><input type="radio" id="send_files" name="transfer_mode" value="send" />Send Files</label>
             <label><input type="radio" id="receive_files" name="transfer_mode" value="receive" />Receive Files</label>
             <button type="submit">Set Mode</button>
         </form>
-        <div id="connect_code" class="hidden">Enter this code on your other device: <span id="device_code"></span></div>
-        <form action="" id="device_pair_request" class="hidden">
+        <div id="connect_code" class="hideable">Enter this code on your other device: <span id="device_code"></span></div>
+        <form action="" id="device_pair_request" class="hideable">
             <label>Enter your other device's code: <input type="text" name="other_device_code" id="other_device_code" maxlength="5"></label>
             <button id="pair_request_submit" type="submit" disabled>Request Pairing</button>
         </form>
