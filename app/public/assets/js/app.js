@@ -18,7 +18,7 @@ function renderView(view, locals = {}){
         },
         send_ready: {
             message: "Use the form to upload files",
-            shownIds: [],
+            shownIds: ['upload'],
         },
         receive_ready: {
             message: "Waiting for sent files...",
