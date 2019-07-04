@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', event => {
         if (message.mode === null){
             renderView('home');
         } else if (['send', 'receive'].includes(message.mode)){
+            document.getElementById('pair_request_submit').setAttribute('disabled', 'disabled');
+            document.getElementById('other_device_code').removeAttribute('disabled');
+            document.getElementById('other_device_code').value = "";
+
             renderView(message.mode + "_pair", { device_code: message.id });
         }
     });

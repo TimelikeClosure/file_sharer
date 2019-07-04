@@ -101,6 +101,7 @@ const socketRequestPair = socket => device_code => {
     // Exit if socket is already paired
     if (
         socketStats.pairedSocket
+        && sockets.has(socketStats.pairedSocket)
         && sockets.get(socketStats.pairedSocket).pairedSocket === socket
     ){ return }
     // Exit if device_code doesn't exist
